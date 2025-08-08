@@ -4,6 +4,7 @@ import flixel.util.FlxSave;
 import openfl.utils.Assets;
 import flixel.FlxBasic;
 import flixel.FlxObject;
+import backend.ExtraKeysHandler.EKNoteColor;
 
 #if cpp
 @:cppFileCode('#include <thread>')

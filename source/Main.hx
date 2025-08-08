@@ -34,6 +34,8 @@ import hl.Api;
 #if linux
 import lime.graphics.Image;
 
+import backend.ExtraKeysHandler;
+
 @:cppInclude('./external/gamemode_client.h')
 @:cppFileCode('
 	#define GAMEMODE_AUTO

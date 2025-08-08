@@ -29,6 +29,7 @@ typedef SwagSong =
 
 	@:optional var arrowSkin:String;
 	@:optional var splashSkin:String;
+	@:optional var mania:Int;
 }
 
 class Song
@@ -51,6 +52,7 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = 'gf';
+	public var mania:Int = 3;
 
 	public var mapper:String = 'N/A';
 	public var musican:String = 'N/A';
@@ -89,6 +91,12 @@ class Song
 				}
 			}
 		}
+
+		if (songJson.mania == null)
+		{
+			songJson.mania = 3;
+		}
+
 	}
 
 	public function new(song, notes, bpm)

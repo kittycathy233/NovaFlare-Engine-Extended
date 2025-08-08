@@ -161,6 +161,9 @@ import states.TitleState;
 	public var enableRecordRotation:Bool = true;
 	public var enableBpmZoom:Bool = true;
 	
+	//Extra Keys
+	public var keybindShowcase:Bool = true;
+	
 	//public var theme:Array<String> = ["Circle", "Straight", "None"];
 	//public var SongInfo:Array<String> = ["None", "Middle", "topLeft", "downLeft", "topRight", "downRight"];
 	public var theme:String = "Circle";
