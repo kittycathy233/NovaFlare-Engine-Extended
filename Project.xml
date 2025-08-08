@@ -127,6 +127,9 @@
 
 	<haxelib name="flxsoundfilters" />
 	
+	<!--Extra Keys-->
+	<haxelib name="json2object" />
+	
 	<!-- Mobile Specific-->
 	<haxelib name="extension-androidtools" if="android" />
 	<!--<haxelib name="hx-ios-uikit" if="ios" />-->
