@@ -31,10 +31,12 @@ import backend.device.ALSoftConfig;
 #if hl
 import hl.Api;
 #end
+
+import backend.ExtraKeysHandler;
+
 #if linux
 import lime.graphics.Image;
 
-import backend.ExtraKeysHandler;
 
 @:cppInclude('./external/gamemode_client.h')
 @:cppFileCode('
@@ -130,6 +132,8 @@ class Main extends Sprite
 
 		#if LUA_ALLOWED llua.Lua.set_callbacks_function(cpp.Callable.fromStaticFunction(psychlua.CallbackHandler.call)); #end
 		Controls.instance = new Controls();
+		ExtraKeysHandler.instance = new ExtraKeysHandler();
+		
 		ClientPrefs.loadDefaultKeys();
 
 		#if mobile
