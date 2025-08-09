@@ -3,9 +3,8 @@ package backend;
 class Replay
 {
 	// 整个组>摁压类型>行数>时间
-	static public var saveData:Array<Array<Array<Float>>> = [[[], [], [], []], [[], [], [], []]];
-
-	static public var hitData:Array<Array<Array<Float>>> = [[[], [], [], []], [[], [], [], []]];
+	static public var saveData:Array<Array<Array<Float>>> = [[], []];
+	static public var hitData:Array<Array<Array<Float>>> = [[], []];
 
 	static public var songName:String = '';
 	static public var songScore:Int = 0;
@@ -32,23 +31,25 @@ class Replay
 	static public var flipChart:Bool = false;
 	static public var nowTime:String = '';
 
+	static public var mania:Int = 3; // 键位数变量，默认为4键 //但神必Psych EK默认为“3”
+	static var isPaused:Bool = false;
+	static var checkArray:Array<Float> = [];
+	static var allowHit:Array<Bool> = [];
+
 	/////////////////////////////////////////////
 
 	static public function push(time:Float, type:Int, state:Int)
 	{
-		if (!PlayState.replayMode)
+		if (!PlayState.replayMode && type < mania)
 			try
 			{
 				saveData[state][type].push(time);
 			}
 	}
 
-	static var isPaused:Bool = false;
-	static var checkArray:Array<Float> = [-9999, -9999, -9999, -9999];
-
 	static public function pauseCheck(time:Float, type:Int)
 	{
-		if (PlayState.replayMode)
+		if (PlayState.replayMode || type >= mania)
 			return;
 		checkArray[type] = time;
 	}
@@ -59,28 +60,33 @@ class Replay
 		{
 			if (isPaused)
 			{
-				for (key in 0...4)
-					if (!PlayState.instance.controls.pressed(PlayState.instance.keysArray[key]) && checkArray[key] != -9999)
+				for (key in 0...mania)
+				{
+					if (key < checkArray.length && !PlayState.instance.controls.pressed(PlayState.instance.keysArray[key]) && checkArray[key] != -9999)
 						push(checkArray[key], key, 1);
+				}
 
-				checkArray = [-9999, -9999, -9999, -9999];
+				// 重置检查数组
+				for (i in 0...mania)
+					checkArray[i] = -9999;
 				isPaused = false;
 			}
 		}
 		else
 		{
-			for (type in 0...4)
+			for (type in 0...mania)
 			{
-				if (hitData[1][type].length > 0 && hitData[1][type][0] < Conductor.songPosition)
+				if (type < hitData[1].length && hitData[1][type].length > 0 && hitData[1][type][0] < Conductor.songPosition)
 					holdCheck(type);
 			}
 		}
 	}
 
-	static var allowHit:Array<Bool> = [true, true, true, true];
-
 	static function holdCheck(type:Int)
 	{
+		if (type >= hitData[0].length || type >= hitData[1].length) 
+			return;
+			
 		if (hitData[0][type][0] >= Conductor.songPosition)
 		{
 			PlayState.instance.keysCheck(type, Conductor.songPosition);
@@ -106,27 +112,60 @@ class Replay
 
 	static public function init()
 	{
-		hitData = [[[], [], [], []], [[], [], [], []]];
+		// 只能这么复制 --狐月影
+		hitData = [[], []];
 		for (state in 0...2)
-			for (type in 0...4)
+		{
+			hitData[state] = [];
+			for (type in 0...mania)
+			{
+				hitData[state][type] = [];
 				for (hit in 0...saveData[state][type].length)
 				{
 					hitData[state][type].push(saveData[state][type][hit]);
 				}
-		allowHit = [true, true, true, true];
-
-		// 只能这么复制 --狐月影
+			}
+		}
+		
+		// 初始化允许命中数组
+		allowHit = [];
+		for (i in 0...mania)
+			allowHit.push(true);
 	}
 
 	static public function reset()
 	{
-		saveData = hitData = [[[], [], [], []], [[], [], [], []]];
-		checkArray = [-9999, -9999, -9999, -9999];
+		// 愚蠢但是有用 --狐月影
+		saveData = [[], []];
+		hitData = [[], []];
+		
+		for (state in 0...2)
+		{
+			saveData[state] = [];
+			hitData[state] = [];
+			for (type in 0...mania)
+			{
+				saveData[state][type] = [];
+				hitData[state][type] = [];
+			}
+		}
+		
+		// 初始化检查数组
+		checkArray = [];
+		for (i in 0...mania)
+			checkArray.push(-9999);
+		
+		// 初始化允许命中数组
+		allowHit = [];
+		for (i in 0...mania)
+			allowHit.push(true);
+		
 		isPaused = false;
-	} // 愚蠢但是有用 --狐月影
+	}
 
 	static public function putDetails(putData:Array<Dynamic>)
 	{
+		// 六百六十六 -狐月影
 		songName = putData[0];
 		songScore = putData[1];
 		songLength = putData[2];
@@ -148,5 +187,5 @@ class Replay
 		opponent = putData[18];
 		flipChart = putData[19];
 		nowTime = putData[20];
-	} // 六百六十六 -狐月影
+	}
 }
